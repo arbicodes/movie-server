@@ -1,0 +1,57 @@
+nohup: ignoring input
+Server running on port 3000
+Error: ENOENT: no such file or directory, stat '/home/arbi/movie-server/movies/movie1.mp4'
+    at Object.statSync (node:fs:1688:3)
+    at /home/arbi/movie-server/server.js:12:19
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/arbi/movie-server/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/arbi/movie-server/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at /home/arbi/movie-server/node_modules/express/lib/router/index.js:284:15
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:365:14)
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:376:14)
+    at Function.process_params (/home/arbi/movie-server/node_modules/express/lib/router/index.js:421:3)
+Error: ENOENT: no such file or directory, stat '/home/arbi/movie-server/movies/movie1.mp4'
+    at Object.statSync (node:fs:1688:3)
+    at /home/arbi/movie-server/server.js:12:19
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/arbi/movie-server/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/arbi/movie-server/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at /home/arbi/movie-server/node_modules/express/lib/router/index.js:284:15
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:365:14)
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:376:14)
+    at Function.process_params (/home/arbi/movie-server/node_modules/express/lib/router/index.js:421:3)
+Error: ENOENT: no such file or directory, stat '/home/arbi/movie-server/movies/movie1.mp4'
+    at Object.statSync (node:fs:1688:3)
+    at /home/arbi/movie-server/server.js:12:19
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/arbi/movie-server/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/arbi/movie-server/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at /home/arbi/movie-server/node_modules/express/lib/router/index.js:284:15
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:365:14)
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:376:14)
+    at Function.process_params (/home/arbi/movie-server/node_modules/express/lib/router/index.js:421:3)
+Error: ENOENT: no such file or directory, stat '/home/arbi/movie-server/movies/movie1.mp4'
+    at Object.statSync (node:fs:1688:3)
+    at /home/arbi/movie-server/server.js:12:19
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/arbi/movie-server/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/arbi/movie-server/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at /home/arbi/movie-server/node_modules/express/lib/router/index.js:284:15
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:365:14)
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:376:14)
+    at Function.process_params (/home/arbi/movie-server/node_modules/express/lib/router/index.js:421:3)
+Error: ENOENT: no such file or directory, stat '/home/arbi/movie-server/movies/movie1.mp4'
+    at Object.statSync (node:fs:1688:3)
+    at /home/arbi/movie-server/server.js:12:19
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/arbi/movie-server/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/arbi/movie-server/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/arbi/movie-server/node_modules/express/lib/router/layer.js:95:5)
+    at /home/arbi/movie-server/node_modules/express/lib/router/index.js:284:15
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:365:14)
+    at param (/home/arbi/movie-server/node_modules/express/lib/router/index.js:376:14)
+    at Function.process_params (/home/arbi/movie-server/node_modules/express/lib/router/index.js:421:3)

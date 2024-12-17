@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Haven</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.css" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        :root {
+            --warm-bg: #1a1614;
+            --cozy-accent: #e67e22;
+            --text-primary: #fff;
+            --card-bg: rgba(42, 34, 32, 0.9);
+            --shadow-warm: 0 10px 30px rgba(230, 126, 34, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--warm-bg);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            background-image: 
+                linear-gradient(45deg, rgba(230, 126, 34, 0.05) 0%, transparent 100%),
+                radial-gradient(circle at 20% 20%, rgba(42, 31, 29, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(36, 28, 26, 0.8) 0%, transparent 50%);
+        }
+
+        .movie-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            background: rgba(26, 22, 20, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 12px 24px;
+            background: var(--cozy-accent);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+            background: #d35400;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .movie-info {
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(42, 34, 32, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .movie-info h1 {
+            margin: 0 0 15px 0;
+            color: var(--cozy-accent);
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-info p {
+            margin: 15px 0;
+            line-height: 1.8;
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .progress-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px 20px;
+            border-radius: 10px;
+        }
+
+        /* Enhanced Plyr styles */
+        .plyr--video {
+            border-radius: 20px;
+            overflow: hidden;
+            --plyr-color-main: var(--cozy-accent);
+        }
+
+        .plyr--full-ui input[type=range] {
+            color: var(--cozy-accent);
+        }
+
+        /* Modify play button animation */
+        .plyr__control--overlaid {
+            background: rgba(230, 126, 34, 0.8);
+            border: 0;
+            border-radius: 100%;
+            color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            transition: background-color 0.3s ease;
+        }
+
+        .plyr__control--overlaid:hover {
+            background: rgba(230, 126, 34, 1);
+        }
+
+        .plyr--video .plyr__controls {
+            background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8));
+            padding: 20px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .plyr__menu__container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .plyr__menu__container .plyr__control {
+            color: var(--text-primary);
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(230, 126, 34, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--cozy-accent);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error message styling */
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(231, 76, 60, 0.9);
+            padding: 20px 30px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1em;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            display: none;
+            z-index: 20;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        /* Status message */
+        .status-message {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            background: rgba(42, 34, 32, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .status-message.show {
+            opacity: 1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .movie-container {
+                padding: 15px;
+            }
+
+            .movie-info {
+                padding: 20px;
+            }
+
+            .movie-info h1 {
+                font-size: 2em;
+            }
+
+            .back-button {
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="movie-container">
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left" style="margin-right: 10px;"></i>
+            Back to Movies
+        </a>
+
+        <div class="video-wrapper">
+            <video id="player" playsinline controls crossorigin>
+                <!-- Source will be set dynamically -->
+            </video>
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+            <div class="error-message"></div>
+        </div>
+
+        <div class="movie-info">
+            <h1 id="movieTitle">Loading...</h1>
+            <p id="movieDescription">Loading...</p>
+            <div class="progress-info" id="progressInfo"></div>
+        </div>
+    </div>
+
+    <div class="status-message" id="statusMessage"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
+    <script>
+        // Get movie ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        // Format time for display
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            return h > 0 
+                ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+                : `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // Format timestamp to relative time
+        function formatLastWatched(timestamp) {
+            const diff = Date.now() - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+            if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            return 'Just now';
+        }
+
+        // Initialize enhanced Plyr with optimizations
+        const player = new Plyr('#player', {
+            controls: [
+                'play-large', 'play', 'progress', 'current-time', 'duration',
+                'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+            ],
+            settings: ['captions', 'quality', 'speed', 'loop'],
+            quality: {
+                default: 1080,
+                options: [4320, 2880, 2160, 1440, 1080, 720, 576, 480, 360, 240]
+            },
+            speed: {
+                selected: 1,
+                options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+            },
+            keyboard: { focused: true, global: true },
+            tooltips: { controls: true, seek: true },
+            preload: 'auto',
+            seekTime: 10
+        });
+
+        // Show status message
+        function showStatus(message, duration = 3000) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.classList.add('show');
+            setTimeout(() => {
+                statusElement.classList.remove('show');
+            }, duration);
+        }
+
+        // Update progress info display with enhanced formatting
+        function updateProgressInfo() {
+            const progressInfo = document.getElementById('progressInfo');
+            const currentTime = player.currentTime;
+            const duration = player.duration;
+            const progress = (currentTime / duration) * 100;
+            const lastAccessed = localStorage.getItem(`movie-${movieId}-lastAccessed`);
+            const buffered = player.buffered;
+
+            if (duration && progressInfo) {
+                let bufferedEnd = 0;
+                if (buffered.length > 0) {
+                    bufferedEnd = (buffered.end(buffered.length - 1) / duration) * 100;
+                }
+
+                progressInfo.innerHTML = `
+                    <div>
+                        <strong>Progress:</strong> ${Math.round(progress)}% 
+                        (${formatTime(currentTime)} / ${formatTime(duration)})
+                        ${bufferedEnd > 0 ? `<br><strong>Buffered:</strong> ${Math.round(bufferedEnd)}%` : ''}
+                    </div>
+                    ${lastAccessed ? `<div><strong>Last watched:</strong> ${formatLastWatched(parseInt(lastAccessed))}</div>` : ''}
+                `;
+            }
+        }
+
+        // Load movie details with enhanced error handling
+        async function loadMovieDetails(movieId) {
+            try {
+                const response = await fetch('/movie-config/' + movieId);
+                if (!response.ok) throw new Error('Failed to load movie details');
+                
+                const movieConfig = await response.json();
+
+                document.getElementById('movieTitle').textContent = movieConfig.title || `Movie ${movieId.replace('movie', '')}`;
+                document.getElementById('movieDescription').textContent = movieConfig.description || `Description for Movie ${movieId.replace('movie', '')}`;
+                document.title = movieConfig.title || `Movie ${movieId.replace('movie', '')}`;
+
+                if (movieConfig.filename) {
+                    const videoPath = `/stream/${movieConfig.filename}`;
+                    
+                    player.source = {
+                        type: 'video',
+                        sources: [{
+                            src: videoPath,
+                            type: movieConfig.fileType || 'video/mp4',
+                            size: 1080
+                        }],
+                        preload: true
+                    };
+
+                    player.on('loadedmetadata', () => {
+                        document.querySelector('.loading-overlay').style.display = 'none';
+                        
+                        const savedTime = localStorage.getItem(`movie-${movieId}-timestamp`);
+                        if (savedTime) {
+                            const timestamp = parseFloat(savedTime);
+                            if (timestamp < player.duration - 30) {
+                                player.currentTime = timestamp;
+                            }
+                        }
+                        
+                        localStorage.setItem(`movie-${movieId}-duration`, player.duration);
+                        updateProgressInfo();
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading movie:', error);
+            }
+        }
+
+        // Save progress with debouncing
+        let saveTimeout;
+        player.on('timeupdate', () => {
+            if (movieId && player.currentTime > 0) {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    localStorage.setItem(`movie-${movieId}-timestamp`, player.currentTime);
+                    localStorage.setItem(`movie-${movieId}-duration`, player.duration);
+                    localStorage.setItem(`movie-${movieId}-lastAccessed`, Date.now());
+                    updateProgressInfo();
+                }, 1000);
+            }
+        });
+
+        player.on('error', (error) => {
+            console.error('Player error:', error);
+            if (error.detail && error.detail.code === 3) {
+                const video = document.querySelector('#player');
+                if (video) {
+                    video.innerHTML = '';
+                    const source = document.createElement('source');
+                    source.src = player.source.sources[0].src;
+                    source.type = player.source.sources[0].type;
+                    video.appendChild(source);
+                    video.load();
+                    video.play().catch(console.error);
+                }
+            }
+        });
+
+        player.on('ended', () => {
+            localStorage.removeItem(`movie-${movieId}-timestamp`);
+            updateProgressInfo();
+        });
+
+        if (movieId) {
+            loadMovieDetails(movieId);
+        } else {
+            window.location.href = '/';
+        }
+
+        setInterval(updateProgressInfo, 1000);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowLeft') player.rewind(10);
+            if (e.code === 'ArrowRight') player.forward(10);
+            if (e.code === 'Space') player.togglePlay();
+            if (e.code === 'KeyM') player.toggleMute();
+            if (e.code === 'KeyF') player.toggleFullscreen();
+        });
+    </script>
+    <div id="sync-controls"></div>
+    <script type="text/babel">
+        const SyncControls = () => {
+          const [syncId, setSyncId] = React.useState('');
+          const [isSyncing, setIsSyncing] = React.useState(false);
+          const [viewerCount, setViewerCount] = React.useState(0);
+          const [ws, setWs] = React.useState(null);
+          const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+        
+          const connectSync = () => {
+            if (!syncId.trim()) return;
+            
+            const wsUrl = `wss://${window.location.host}/sync?syncId=${syncId}`;
+            console.log('Connecting to:', wsUrl);
+            const newWs = new WebSocket(wsUrl);
+            
+            const connectionTimeout = setTimeout(() => {
+              if (newWs.readyState !== WebSocket.OPEN) {
+                newWs.close();
+                showStatus('Failed to connect. Please try again.');
+                setIsSyncing(false);
+              }
+            }, 5000);
+        
+            newWs.onmessage = (event) => {
+              console.log('Received message:', event.data);
+              const data = JSON.parse(event.data);
+              switch (data.type) {
+                case 'sync_update':
+                  if (data.forced && player) {
+                    console.log('Syncing to:', data.timestamp);
+                    player.currentTime = data.timestamp;
+                    if (data.isPlaying) {
+                      player.play().catch(console.error);
+                    } else {
+                      player.pause();
+                    }
+                  }
+                  break;
+                case 'play_pause_update':
+                  if (player) {
+                    console.log('Play/Pause update:', data.isPlaying);
+                    if (data.isPlaying) {
+                      player.play().catch(console.error);
+                    } else {
+                      player.pause();
+                    }
+                  }
+                  break;
+                case 'viewer_count':
+                  setViewerCount(data.count);
+                  break;
+              }
+            };
+            
+            newWs.onopen = () => {
+              console.log('WebSocket connected');
+              clearTimeout(connectionTimeout);
+              setIsSyncing(true);
+              setWs(newWs);
+              showStatus('Successfully connected!');
+            };
+            
+            newWs.onclose = () => {
+              console.log('WebSocket disconnected');
+              setIsSyncing(false);
+              setViewerCount(0);
+              showStatus('Disconnected from sync session');
+            };
+        
+            newWs.onerror = (error) => {
+              console.error('WebSocket error:', error);
+              showStatus('Error connecting to sync session');
+              setIsSyncing(false);
+            };
+        
+            setIsSyncing(true);
+          };
+        
+          const disconnectSync = () => {
+            if (ws) {
+              ws.close();
+              setWs(null);
+              setIsSyncing(false);
+              setViewerCount(0);
+            }
+          };
+        
+          const syncTimestamp = () => {
+            if (ws && player) {
+              console.log('Sending sync timestamp:', player.currentTime);
+              ws.send(JSON.stringify({
+                type: 'sync_timestamp',
+                timestamp: player.currentTime,
+                isPlaying: !player.paused
+              }));
+              showStatus('Synced timestamp with other viewers');
+            }
+          };
+        
+          const togglePlayAll = () => {
+            if (ws && player) {
+              const isPlaying = !player.paused;
+              console.log('Sending play/pause:', !isPlaying);
+              ws.send(JSON.stringify({
+                type: 'play_pause',
+                isPlaying: !isPlaying
+              }));
+              if (isPlaying) {
+                player.pause();
+              } else {
+                player.play().catch(console.error);
+              }
+              showStatus(isPlaying ? 'Paused for all viewers' : 'Playing for all viewers');
+            }
+          };
+        
+          return (
+            <div style={{
+              position: 'fixed',
+              bottom: '16px',
+              right: '16px',
+              zIndex: '9999'
+            }}>
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                style={{
+                  background: '#e67e22',
+                  color: 'white',
+                  padding: '12px',
+                  borderRadius: '9999px',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <i className={`fas fa-users ${isSyncing ? 'text-green-400' : ''}`}></i>
+              </button>
+        
+              {isMenuOpen && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '64px',
+                  right: '0',
+                  background: '#2a2220',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                  border: '1px solid rgba(230,126,34,0.1)',
+                  backdropFilter: 'blur(8px)',
+                  width: '288px',
+                  zIndex: '9999'
+                }}>
+                  {!isSyncing ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <input
+                        type="text"
+                        value={syncId}
+                        onChange={(e) => setSyncId(e.target.value)}
+                        placeholder="Enter Sync ID"
+                        style={{
+                          width: '100%',
+                          padding: '8px',
+                          background: '#1a1614',
+                          border: '1px solid rgba(230,126,34,0.2)',
+                          borderRadius: '4px',
+                          color: 'white'
+                        }}
+                      />
+                      <button
+                        onClick={connectSync}
+                        style={{
+                          width: '100%',
+                          background: '#e67e22',
+                          color: 'white',
+                          padding: '8px',
+                          borderRadius: '4px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          opacity: isSyncing ? '0.7' : '1'
+                        }}
+                        disabled={isSyncing}
+                      >
+                        {isSyncing ? 'Connecting...' : 'Start Sync Session'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>
+                        Sync ID: {syncId} • {viewerCount} viewer{viewerCount !== 1 ? 's' : ''}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                        <button
+                          onClick={syncTimestamp}
+                          style={{
+                            background: '#e67e22',
+                            color: 'white',
+                            padding: '8px',
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Sync Time
+                        </button>
+                        <button
+                          onClick={togglePlayAll}
+                          style={{
+                            background: '#e67e22',
+                            color: 'white',
+                            padding: '8px',
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Play/Pause All
+                        </button>
+                      </div>
+                      <button
+                        onClick={disconnectSync}
+                        style={{
+                          width: '100%',
+                          background: '#ef4444',
+                          color: 'white',
+                          padding: '8px',
+                          borderRadius: '4px',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        End Sync
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        };
+        
+        const container = document.getElementById('sync-controls');
+        ReactDOM.render(React.createElement(SyncControls), container);
+    </script>
+</body>
+</html>

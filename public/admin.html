@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Admin Panel</title>
+    <style>
+        :root {
+            --warm-bg: #1a1614;
+            --cozy-accent: #e67e22;
+            --text-primary: #fff;
+            --card-bg: #2a2220;
+            --danger: #e74c3c;
+        }
+
+        body {
+            margin: 0;
+            background: var(--warm-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .movie-file {
+            background: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .slot-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .file-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .direct-upload {
+            display: flex;
+            gap: 10px;
+        }
+
+        .metadata {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .direct-upload input {
+            flex-grow: 1;
+        }
+
+        .slot-picker, select {
+            background: #444;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            width: 100%;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--cozy-accent);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #d35400;
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .delete-btn {
+            background: var(--danger);
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .download-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .download-item {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: #444;
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--cozy-accent);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .download-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .download-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        h1, h2, h3 {
+            color: var(--cozy-accent);
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid var(--danger);
+        }
+
+        .success-message {
+            color: #2ecc71;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid #2ecc71;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            background: #333;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Movie Admin Panel</h1>
+   
+    <div class="section">
+        <h2>Download Manager</h2>
+        <div class="download-input">
+            <input type="text" id="magnetInput" placeholder="Paste magnet link here">
+            <button onclick="startTorrent()" id="torrentButton">Start Torrent Download</button>
+        </div>
+
+        <div class="download-input">
+            <input type="text" id="urlInput" placeholder="Direct video URL">
+            <input type="text" id="fileNameInput" placeholder="Filename (with extension)">
+            <button onclick="startDirectDownload()" id="directButton">Download from URL</button>
+        </div>
+        <div id="downloadStatus"></div>
+    </div>
+
+    <div class="grid-container">
+        <div class="section">
+            <h2>Available Movie Files</h2>
+            <div id="fileList"></div>
+        </div>
+
+        <div class="section">
+            <h2>Movie Slots</h2>
+            <div id="slotList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = {};
+        let availableFiles = [];
+        let activeDownloads = new Map();
+
+        function loadData() {
+            fetch('/movies', {
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Received data:', data); // Debug log
+                if (!data || (!data.availableFiles && !data.config)) {
+                    throw new Error('Invalid data format received');
+                }
+                availableFiles = data.availableFiles || [];
+                currentConfig = data.config || {};
+                createSlots();
+                updateFileList();
+            })
+            .catch(err => {
+                console.error('Error loading data:', err); // Debug log
+                showError(`Failed to load movie data: ${err.message}`);
+            });
+        }
+
+        function showError(message) {
+            const statusDiv = document.getElementById('downloadStatus');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            statusDiv.prepend(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            const statusDiv = document.getElementById('downloadStatus');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            statusDiv.prepend(successDiv);
+            setTimeout(() => successDiv.remove(), 5000);
+        }
+
+        function createSlots() {
+            const container = document.getElementById('slotList');
+            container.innerHTML = '';
+
+            ['movie1', 'movie2', 'movie3', 'movie4', 'movie5'].forEach(slot => {
+                const config = currentConfig[slot] || {};
+                const div = document.createElement('div');
+                div.className = 'section';
+                div.innerHTML = `
+                    <h3>Slot ${slot.replace('movie', '')}</h3>
+                    <div class="slot-content">
+                        <div class="file-selection">
+                            <select id="${slot}-file" onchange="handleFileSelect('${slot}')">
+                                <option value="">Select a file</option>
+                                ${availableFiles.map(file => `
+                                    <option value="${file}" ${config.source && config.source.includes(file) ? 'selected' : ''}>
+                                        ${file}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="metadata">
+                            <h4>Movie Page Info</h4>
+                            <input type="text" 
+                                id="${slot}-title" 
+                                placeholder="Movie Page Title"
+                                value="${config.title || ''}"
+                            >
+                            <textarea 
+                                id="${slot}-desc" 
+                                placeholder="Movie Page Description"
+                                rows="3"
+                            >${config.description || ''}</textarea>
+                        </div>
+                        <button onclick="updateSlot('${slot}')">Update Movie Page</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            if (availableFiles.length === 0) {
+                fileList.innerHTML = '<div class="empty-state">No files available</div>';
+                return;
+            }
+            
+            fileList.innerHTML = availableFiles.map(file => `
+                <div class="movie-file">
+                    <span>${file}</span>
+                    <div class="movie-actions">
+                        <button onclick="deleteMovie('${file}')" class="delete-btn">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleFileSelect(slot) {
+            const filename = document.getElementById(`${slot}-file`).value;
+            if (!filename) return;
+
+            const titleInput = document.getElementById(`${slot}-title`);
+            if (!titleInput.value) {
+                titleInput.value = filename.replace(/\.[^/.]+$/, "").replace(/[._-]/g, " ");
+            }
+        }
+
+        function updateSlot(slot) {
+            const filename = document.getElementById(`${slot}-file`).value;
+            const title = document.getElementById(`${slot}-title`).value;
+            const desc = document.getElementById(`${slot}-desc`).value;
+
+            fetch('/admin/update-movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    slot,
+                    filename,
+                    title: title || `Movie ${slot.replace('movie', '')}`,
+                    description: desc || `Description for Movie ${slot.replace('movie', '')}`
+                })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showSuccess(`Updated Movie ${slot.replace('movie', '')} page successfully!`);
+                    loadData(); // Reload the data
+                } else {
+                    throw new Error(data.error || 'Update failed');
+                }
+            })
+            .catch(err => {
+                console.error('Error updating slot:', err);
+                showError(`Failed to update movie page: ${err.message}`);
+            });
+        }
+
+        function deleteMovie(filename) {
+            if (!confirm(`Are you sure you want to delete ${filename}?`)) {
+                return;
+            }
+
+            fetch('/admin/delete-movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filename })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showSuccess(`Deleted ${filename} successfully!`);
+                    loadData(); // Reload the data
+                } else {
+                    throw new Error(data.error || 'Delete failed');
+                }
+            })
+            .catch(err => {
+                console.error('Error deleting movie:', err);
+                showError(`Failed to delete movie: ${err.message}`);
+            });
+        }
+
+        function startTorrent() {
+            const magnetLink = document.getElementById('magnetInput').value.trim();
+            if (!magnetLink) {
+                showError('Please enter a magnet link');
+                return;
+            }
+
+            const torrentButton = document.getElementById('torrentButton');
+            torrentButton.disabled = true;
+
+            fetch('/admin/start-torrent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ magnetLink })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showSuccess('Torrent download started successfully!');
+                    document.getElementById('magnetInput').value = '';
+                } else {
+                    throw new Error(data.error || 'Failed to start torrent download');
+                }
+            })
+            .catch(err => {
+                console.error('Error starting torrent:', err);
+                showError(`Failed to start torrent: ${err.message}`);
+            })
+            .finally(() => {
+                torrentButton.disabled = false;
+            });
+        }
+
+        function startDirectDownload() {
+            const url = document.getElementById('urlInput').value.trim();
+            const filename = document.getElementById('fileNameInput').value.trim();
+
+            if (!url) {
+                showError('Please enter a URL');
+                return;
+            }
+            if (!filename) {
+                showError('Please enter a filename');
+                return;
+            }
+
+            const directButton = document.getElementById('directButton');
+            directButton.disabled = true;
+
+            fetch('/admin/start-direct-download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, filename })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showSuccess('Direct download started successfully!');
+                    document.getElementById('urlInput').value = '';
+                    document.getElementById('fileNameInput').value = '';
+                } else {
+                    throw new Error(data.error || 'Failed to start direct download');
+                }
+            })
+            .catch(err => {
+                console.error('Error starting direct download:', err);
+                showError(`Failed to start direct download: ${err.message}`);
+            })
+            .finally(() => {
+                directButton.disabled = false;
+            });
+        }
+
+        // Initial load
+        loadData();
+        
+        // Refresh data periodically
+        setInterval(loadData, 30000); // Refresh every 30 seconds
+    </script>
+</body>
+</html>

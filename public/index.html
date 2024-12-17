@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVIE NIGHT</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --warm-bg: #1a1614;
+            --cozy-accent: #e67e22;
+            --text-primary: #fff;
+            --card-bg: #2a2220;
+            --hover-color: #f39c12;
+            --progress-bg: rgba(255,255,255,0.1);
+            --shadow-warm: 0 10px 30px rgba(230, 126, 34, 0.15);
+            --card-border: rgba(230, 126, 34, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--warm-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(42, 31, 29, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(36, 28, 26, 0.8) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, #2c1810, #3d2317);
+            border-radius: 30px;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow-warm),
+                        0 20px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(230, 126, 34, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(243, 156, 18, 0.1) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='20' height='20' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+            opacity: 0.8;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em;
+            margin: 0;
+            color: var(--cozy-accent);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3),
+                         0 0 20px rgba(230, 126, 34, 0.2);
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: #ddd;
+            font-size: 1.4em;
+            margin: 20px 0 0;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            color: var(--cozy-accent);
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            margin: 60px 20px 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            font-size: 0.8em;
+            color: rgba(230, 126, 34, 0.8);
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .movie-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+        }
+
+        .movie-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(135deg, rgba(230, 126, 34, 0.1), transparent),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.02) rotateX(2deg);
+            box-shadow: var(--shadow-warm),
+                        0 20px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--cozy-accent);
+        }
+
+        .movie-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .movie-card h3 {
+            margin: 0;
+            color: var(--cozy-accent);
+            font-size: 1.6em;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+        }
+
+        .movie-card p {
+            margin: 0;
+            color: #aaa;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: var(--progress-bg);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: auto;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cozy-accent), var(--hover-color));
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+        }
+
+        .last-watched {
+            color: #888;
+            font-size: 0.95em;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .watch-button {
+            background: linear-gradient(135deg, var(--cozy-accent), var(--hover-color));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+        }
+
+        .watch-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .watch-button i {
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+        }
+
+        .watch-button:hover i {
+            transform: translateX(3px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+            font-style: italic;
+            font-size: 1.2em;
+            background: rgba(42, 34, 32, 0.5);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Fancy loading animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--warm-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid var(--card-bg);
+            border-top-color: var(--cozy-accent);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Cozy animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header {
+                padding: 40px 20px;
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .header p {
+                font-size: 1.2em;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+                margin: 40px 15px 20px;
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+                padding: 10px;
+            }
+
+            .movie-card {
+                padding: 25px;
+            }
+
+            .movie-card h3 {
+                font-size: 1.4em;
+            }
+
+            .watch-button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header floating">
+            <h1>Movies Haven</h1>
+            <p>Grab some popcorn and enjoy the show 🍿✨</p>
+        </div>
+
+        <h2 class="section-title">
+            <i class="fas fa-film"></i>
+            All Movies
+        </h2>
+        <div class="movie-grid" id="movieGrid">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+
+    <script>
+        // Hide loading overlay when page is loaded
+        window.addEventListener('load', () => {
+            document.querySelector('.loading-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.querySelector('.loading-overlay').style.display = 'none';
+            }, 500);
+        });
+
+        // Format timestamp to relative time
+        function formatLastWatched(timestamp) {
+            const diff = Date.now() - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+            if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            return 'Just now';
+        }
+
+        // Create movie card
+        function createMovieCard(movie, slot) {
+            const savedTime = localStorage.getItem(`movie-${slot}-timestamp`);
+            const duration = localStorage.getItem(`movie-${slot}-duration`);
+            let progress = 0;
+            let lastWatchedText = '';
+
+            if (savedTime && duration) {
+                progress = (parseFloat(savedTime) / parseFloat(duration)) * 100;
+                lastWatchedText = formatLastWatched(parseInt(localStorage.getItem(`movie-${slot}-lastAccessed`)));
+            }
+
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.innerHTML = `
+                <h3>${movie.title}</h3>
+                <p>${movie.description}</p>
+                ${progress > 0 ? `
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="last-watched">Last watched: ${lastWatchedText}</div>
+                ` : ''}
+                <button class="watch-button" onclick="window.location.href='/movie-page.html?id=${slot}'">
+                    <i class="fas fa-play"></i>
+                    ${progress > 0 ? 'Continue Watching' : 'Start Watching'}
+                </button>
+            `;
+            return card;
+        }
+
+        // Load and display movies
+        fetch('/movies')
+            .then(response => response.json())
+            .then(movies => {
+                console.log('Received movie data:', movies); // Log the received movie data
+                const movieGrid = document.getElementById('movieGrid');
+                let hasMovies = false;
+
+                Object.entries(movies).forEach(([slot, movie]) => {
+                    if (movie.source) {
+                        console.log('Creating movie card for:', movie); // Log the movie being processed
+                        movieGrid.appendChild(createMovieCard(movie, slot));
+                        hasMovies = true;
+                    }
+                });
+
+                if (!hasMovies) {
+                    movieGrid.innerHTML = `
+                        <div class="empty-state">
+                            No movies available. Add some from the admin panel!
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading movies:', error);
+                const movieGrid = document.getElementById('movieGrid');
+                movieGrid.innerHTML = `
+                    <div class="empty-state">
+                        Error loading movies. Please try again later.
+                    </div>
+                `;
+            });
+    </script>
+</body>
+</html>

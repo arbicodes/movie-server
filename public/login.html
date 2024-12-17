@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUESS WHAT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --warm-bg: #1a1614;
+            --cozy-accent: #e67e22;
+            --text-primary: #fff;
+            --card-bg: rgba(42, 34, 32, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--warm-bg);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(230, 126, 34, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(230, 126, 34, 0.1) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            animation: gradientMove 15s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                transform: scale(1.2) rotate(5deg);
+            }
+        }
+
+        .login-container {
+            position: relative;
+            text-align: center;
+            padding: 3.5rem;
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                inset 0 1px 1px rgba(255,255,255,0.1);
+            width: 90%;
+            max-width: 420px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1;
+            animation: containerFloat 1s ease-out forwards;
+        }
+
+        @keyframes containerFloat {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Abril Fatface', cursive;
+            font-size: 3.5em;
+            margin-bottom: 1.5rem;
+            color: var(--cozy-accent);
+            text-shadow: 
+                3px 3px 6px rgba(0,0,0,0.3),
+                0 0 20px rgba(230, 126, 34, 0.2);
+            letter-spacing: 2px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 
+                    3px 3px 6px rgba(0,0,0,0.3),
+                    0 0 20px rgba(230, 126, 34, 0.2);
+            }
+            to {
+                text-shadow: 
+                    3px 3px 6px rgba(0,0,0,0.3),
+                    0 0 30px rgba(230, 126, 34, 0.4);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 1.2rem;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--cozy-accent);
+            background: rgba(255,255,255,0.12);
+            box-shadow: 
+                0 0 20px rgba(230, 126, 34, 0.2),
+                0 0 0 4px rgba(230, 126, 34, 0.1);
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        button {
+            background: var(--cozy-accent);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 10px 20px rgba(230, 126, 34, 0.3),
+                0 6px 6px rgba(0,0,0,0.1);
+            background: #f39c12;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.9rem;
+            animation: shake 0.5s ease-in-out;
+            padding: 0.8rem;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* Glowing dots animation */
+        .glow-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .glow-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--cozy-accent);
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: glowFloat 4s infinite;
+            opacity: 0.5;
+        }
+
+        .glow-dot:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .glow-dot:nth-child(2) { top: 60%; right: 20%; animation-delay: 1s; }
+        .glow-dot:nth-child(3) { bottom: 20%; left: 30%; animation-delay: 2s; }
+        .glow-dot:nth-child(4) { top: 30%; right: 30%; animation-delay: 3s; }
+
+        @keyframes glowFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-20px) scale(1.5);
+                opacity: 0.2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-dots">
+        <div class="glow-dot"></div>
+        <div class="glow-dot"></div>
+        <div class="glow-dot"></div>
+        <div class="glow-dot"></div>
+    </div>
+
+    <div class="login-container">
+        <h1>GUESS WHAT</h1>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Enter the secret password..." required>
+            </div>
+            <button type="submit">Enter</button>
+            <div id="error" class="error">Incorrect password</div>
+        </form>
+    </div>
+
+    <script>
+        async function handleLogin(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            const button = document.querySelector('button');
+            
+            // Disable button and show loading state
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            button.textContent = 'Checking...';
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    errorDiv.style.display = 'none';
+                    button.textContent = 'Welcome!';
+                    // Add a slight delay for better UX
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 500);
+                } else {
+                    throw new Error('Invalid password');
+                }
+            } catch (err) {
+                errorDiv.style.display = 'block';
+                document.getElementById('password').value = '';
+                // Reset button state
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.textContent = 'Enter';
+            }
+        }
+
+        // Clear error message when user starts typing
+        document.getElementById('password').addEventListener('input', () => {
+            document.getElementById('error').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
